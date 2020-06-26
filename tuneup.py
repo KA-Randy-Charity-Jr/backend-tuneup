@@ -5,20 +5,22 @@
 Use the timeit and cProfile libraries to find bad code.
 """
 
-__author__ = "???"
-
+__author__ = "Randy Charity Jr worked with Leanne Benson"
+import timeit
 import cProfile
 import pstats
 import functools
+import collections
 
 
 def profile(func):
-    """A cProfile decorator function that can be used to
-    measure performance.
-    """
-    # Be sure to review the lesson material on decorators.
-    # You need to understand how they are constructed and used.
-    raise NotImplementedError("Complete this decorator function")
+    """A function that can be used as a decorator to measure performance"""
+    def profiler(*args, **kwargs):
+        with cProfile.Profile() as p:
+            result = func(*args, **kwargs)
+        stat = pstats.Stats(p).sort_stats('cumulative')
+        stat.print_stats(5)
+    return profiler
 
 
 def read_movies(src):
@@ -28,34 +30,25 @@ def read_movies(src):
         return f.read().splitlines()
 
 
-def is_duplicate(title, movies):
-    """Returns True if title is within movies list."""
-    for movie in movies:
-        if movie.lower() == title.lower():
-            return True
-    return False
-
-
 def find_duplicate_movies(src):
-    """Returns a list of duplicate movies from a src list."""
+    """Returns a list of duplicate movies from a src list"""
     movies = read_movies(src)
-    duplicates = []
-    while movies:
-        movie = movies.pop()
-        if is_duplicate(movie, movies):
-            duplicates.append(movie)
-    return duplicates
+    return [movie for movie, count in collections.Counter(movies).items() if count > 1]
 
 
 def timeit_helper():
-    """Part A: Obtain some profiling measurements using timeit."""
-    # YOUR CODE GOES HERE
-    pass
+    """Part A:  Obtain some profiling measurements using timeit"""
+    t = timeit.Timer(stmt='find_duplicate_movies("movies.txt")',
+                     setup='from __main__ import find_duplicate_movies')
+    time = t.repeat(repeat=7, number=3)
+    print("Minimum of Average Performances: {}".format(min(time) / 3))
 
 
+@profile
 def main():
     """Computes a list of duplicate movie entries."""
     result = find_duplicate_movies('movies.txt')
+    timeit_helper()
     print(f'Found {len(result)} duplicate movies:')
     print('\n'.join(result))
 
