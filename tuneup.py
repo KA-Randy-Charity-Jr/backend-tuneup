@@ -20,6 +20,7 @@ def profile(func):
             result = func(*args, **kwargs)
         stat = pstats.Stats(p).sort_stats('cumulative')
         stat.print_stats(5)
+        return func(*args, **kwargs)
     return profiler
 
 
