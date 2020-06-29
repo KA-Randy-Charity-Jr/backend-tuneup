@@ -30,6 +30,7 @@ def read_movies(src):
         return f.read().splitlines()
 
 
+@profile
 def find_duplicate_movies(src):
     """Returns a list of duplicate movies from a src list"""
     movies = read_movies(src)
@@ -44,7 +45,6 @@ def timeit_helper():
     print("Minimum of Average Performances: {}".format(min(time) / 3))
 
 
-@profile
 def main():
     """Computes a list of duplicate movie entries."""
     result = find_duplicate_movies('movies.txt')
